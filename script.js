@@ -67,23 +67,42 @@ function printGrafpie () {
     url: "http://157.230.17.132:4009/sales",
     method: "GET",
     success: function (data) {
-      // var monthProfit = getProfit (data);
-      var getUsers = getUser (data);
-
+      // Creiamo un oggetto con 2 Array
+      var agenti = {
+        nome : [],
+        somma : []
+      }
+      // Facciamo ciclare i risultati della chiamata AJAX
+      for (var i = 0; i < data.length; i++) {
+        var d = data[i];
+        // Dichiariamo i nostri salesman 
+        var salesman = d.salesman;
+        // Condizione che verifica costruisce Array nome
+        if (!agenti.nome.includes(salesman)) {
+          agenti.nome.push(salesman);
+          agenti.somma.push(0);
+        }
+        // Dichiariamo i nostri profitti
+        var profitto = d.amount;
+        // Ciclo dell'Array dei nomi
+        for (var x = 0; x < agenti.nome.length; x++) {
+          // Ogni volta che il salesman corrisponde al nome nell'Array il suo profitto si somma
+          if (salesman == agenti.nome[x]) {
+            agenti.somma[x] += profitto;
+          }
+        }
+      }
+      // Script di Chart per costruire il grafico a torta
       var ctx = document.getElementById('myChartpie').getContext('2d');
+      var color = ['red', 'green', 'blue', 'orange'];
       var myChart = new Chart(ctx, {
         type: 'pie',
         data: {
-          labels: [
-            'Marco',
-            'Giuseppe',
-            'Riccardo',
-            'Roberto'
-          ],
+          labels: agenti.nome,
           datasets: [{
-            label: '# 2017',
-            data: getUsers,
-            borderWidth: 1
+            data: agenti.somma,
+            borderWidth: 2,
+            backgroundColor: color
           }]
         },
         options: {
@@ -107,28 +126,6 @@ function printGrafpie () {
 function getMonth () {
   var mese = moment.months();
   return mese;
-}
-
-// Funzione che ci ritorna i profitti per salesman
-function getUser (data) {
-  // Creiamo un Array di 4 elementi
-  var user = [];
-  console.log(user);
-  var profit = [];
-  console.log(profit);
-
-  // Facciamo ciclare i risultati della chiamata AJAX
-  for (var i = 0; i < data.length; i++) {
-    var d = data[i];
-
-    // Prendiamo i nostri salesman e li pushamo
-    var salesman = d.salesman;
-    user.push(salesman);
-
-    // Prendiamo i nostri profitti e li pushamo
-    var amount = Number(d.amount);
-    profit.push(amount);
-  }
 }
 
 $(document).ready(init);
