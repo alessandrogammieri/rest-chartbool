@@ -1,0 +1,19 @@
+/* REGOLE GENERALI */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Lato', sans-serif;
+  user-select: none;
+  list-style: none;
+}
+
+.container {
+  width: 800px;
+  height: 900px;
+  padding: 50px 25px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
