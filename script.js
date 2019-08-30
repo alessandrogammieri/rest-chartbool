@@ -32,7 +32,7 @@ function printGrafline () {
     success: function (data) {
       var monthProfit = getProfit (data);
       var getMonths = getMonth ();
-
+      
       var ctx = document.getElementById('myChartline').getContext('2d');
       var myChart = new Chart(ctx, {
         type: 'line',
@@ -72,6 +72,7 @@ function printGrafpie () {
         nome : [],
         somma : []
       }
+      
       // Facciamo ciclare i risultati della chiamata AJAX
       for (var i = 0; i < data.length; i++) {
         var d = data[i];
@@ -92,6 +93,19 @@ function printGrafpie () {
           }
         }
       }
+
+      // Creo il clone delle opzioni venditore
+      var source = $("#templateSeller").html();
+      var template = Handlebars.compile(source);
+      // Ciclo l'Array dei venditori e gli appendo nell'html
+      for (y = 0; y < agenti.nome.length; y++) {
+        var vend = { 
+          val: agenti.nome[y]
+        };
+        var sellers = template(vend);
+        $("#venditore").append(sellers);
+      }
+
       // Script di Chart per costruire il grafico a torta
       var ctx = document.getElementById('myChartpie').getContext('2d');
       var color = ['red', 'green', 'blue', 'orange'];

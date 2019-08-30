@@ -14,13 +14,34 @@
     <title>Grafico</title>
   </head>
   <body>
-    
-    <div class="container">
-      <canvas id="myChartline" width="800" height="580"></canvas>
+    <h1>Aggiungi le tue vendite</h1>
+    <div class="form">
+      <p>Scegli il venditore: </p>
+      <select id="venditore">
+        <!-- Spazio riempito dal Template Seller  -->
+      </select>
+      <p>Scegli il mese: </p>
+      <select id="mese">
+        <!-- Spazio riempito dal Template Mesi  -->
+      </select>
+      <input type="text">
+      <input type="submit" value="Aggiungi">
     </div>
     <div class="container">
-      <canvas id="myChartpie" width="400" height="400"></canvas>
+      <canvas id="myChartline"></canvas>
     </div>
+    <div class="container">
+      <canvas id="myChartpie"></canvas>
+    </div>
+
+    <!-- Template Handlebars Seller -->
+    <script id="templateSeller" type="text/x-handlebars-template">
+      <option value={{val}}>{{val}}</option>
+    </script>
+    <!-- Template Handlebars Mesi -->
+    <script id="templateMesi" type="text/x-handlebars-template">
+      <option value={{val}}>{{val}}</option>
+    </script>
    
     <!-- JS: CHART JS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
