@@ -94,7 +94,7 @@ function printGrafpie () {
         }
       }
 
-      // Creo il clone delle opzioni venditore
+      // Creo il clone del select Venditori
       var source = $("#templateSeller").html();
       var template = Handlebars.compile(source);
       // Ciclo l'Array dei venditori e gli appendo nell'html
@@ -139,6 +139,17 @@ function printGrafpie () {
 // Funzione che ci ritorna la lista dei mesi in inglese
 function getMonth () {
   var mese = moment.months();
+  // Creo il clone del select Mesi
+  var source = $("#templateMesi").html();
+  var template = Handlebars.compile(source);
+  // Ciclo l'Array dei venditori e gli appendo nell'html
+  for (y = 0; y < mese.length; y++) {
+    var mesiAnno = { 
+      val: mese[y]
+    };
+    var month = template(mesiAnno);
+    $("#mese").append(month);
+  }
   return mese;
 }
 
