@@ -5,6 +5,8 @@ function init() {
 
   printGrafline ()
   printGrafpie ()
+
+  $("#submit").click(postNewData);
 }
 
 // Funzione che ci restituisce i profitti del mese
@@ -41,6 +43,34 @@ function printGrafline () {
           datasets: [{
             label: '# Profitto',
             data: monthProfit,
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)',
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
             borderWidth: 1
           }]
         },
@@ -84,7 +114,7 @@ function printGrafpie () {
           agenti.somma.push(0);
         }
         // Dichiariamo i nostri profitti
-        var profitto = d.amount;
+        var profitto = Number(d.amount);
         // Ciclo dell'Array dei nomi
         for (var x = 0; x < agenti.nome.length; x++) {
           // Ogni volta che il salesman corrisponde al nome nell'Array il suo profitto si somma
@@ -108,7 +138,12 @@ function printGrafpie () {
 
       // Script di Chart per costruire il grafico a torta
       var ctx = document.getElementById('myChartpie').getContext('2d');
-      var color = ['red', 'green', 'blue', 'orange'];
+      var color = [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)'
+      ];
       var myChart = new Chart(ctx, {
         type: 'pie',
         data: {
@@ -151,6 +186,43 @@ function getMonth () {
     $("#mese").append(month);
   }
   return mese;
+}
+
+// Funzione per inserire nuove vendite per mese e venditore
+function postNewData () {
+  // Dichiariamo le variabili con i valori scelti dall'utente
+  var salesman = $("#venditore").val();
+
+  var amount = $("#text-input").val();
+  var valore = Number(amount);
+
+  var month = $("#mese").val();
+  var mom = moment(month, "MMMM");
+  mom.date(Math.floor(Math.random()*(31-1)+1));
+  
+  mom.year(2017);
+  var RandomDate = mom.format("DD/MM/YYYY");
+
+  var outData = {
+    salesman: salesman,
+    amount: valore,
+    date: RandomDate,
+  };
+  
+  // Chiamata AJAX per aggiungere un elemento
+  $.ajax({
+    url: "http://157.230.17.132:4009/sales",
+    method: "POST",
+    data: outData,
+    success: function () {
+      printGrafline ()
+      printGrafpie () 
+    },
+    error: function(){
+      console.log("C'è stato un errore in upload")
+    }
+  })
+  $("#text-input").val("");
 }
 
 $(document).ready(init);
