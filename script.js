@@ -2,10 +2,10 @@
 function init() {
   // Settiamo la località con Italia
   moment.locale("it");
-
+  // Richiamiamo le funzioni che stmapano i grafici
   printGrafline ()
   printGrafpie ()
-
+  // Al click si attiva la funzione per postare nuove info
   $("#submit").click(postNewData);
 }
 
@@ -102,7 +102,6 @@ function printGrafpie () {
         nome : [],
         somma : []
       }
-      
       // Facciamo ciclare i risultati della chiamata AJAX
       for (var i = 0; i < data.length; i++) {
         var d = data[i];
@@ -123,7 +122,15 @@ function printGrafpie () {
           }
         }
       }
-
+      // Ci calcoliamo la somma di tutti i profitti
+      var sum = 0;
+      for (i = 0; i < agenti.somma.length; i++) {
+        sum += agenti.somma[i];
+      }
+      // Ci calcoliamo le % dei singoli profitti
+      for (i = 0; i < agenti.somma.length; i++) {
+        agenti.somma[i] = Math.floor((agenti.somma[i]*100)/sum);
+      }
       // Creo il clone del select Venditori
       var source = $("#templateSeller").html();
       var template = Handlebars.compile(source);
@@ -135,7 +142,6 @@ function printGrafpie () {
         var sellers = template(vend);
         $("#venditore").append(sellers);
       }
-
       // Script di Chart per costruire il grafico a torta
       var ctx = document.getElementById('myChartpie').getContext('2d');
       var color = [
@@ -145,7 +151,7 @@ function printGrafpie () {
         'rgba(75, 192, 192, 0.2)'
       ];
       var myChart = new Chart(ctx, {
-        type: 'pie',
+        type: 'doughnut',
         data: {
           labels: agenti.nome,
           datasets: [{
@@ -153,15 +159,6 @@ function printGrafpie () {
             borderWidth: 2,
             backgroundColor: color
           }]
-        },
-        options: {
-          scales: {
-            yAxes: [{
-              ticks: {
-                beginAtZero: true
-              }
-            }]
-          }
         }
       });
     },
@@ -190,25 +187,27 @@ function getMonth () {
 
 // Funzione per inserire nuove vendite per mese e venditore
 function postNewData () {
-  // Dichiariamo le variabili con i valori scelti dall'utente
+  // Estrapolo il venditore o salesman
   var salesman = $("#venditore").val();
-
+  // Estrapolo il valore delle vendite aggiuntive e converto la stringa in numero
   var amount = $("#text-input").val();
   var valore = Number(amount);
-
+  // Estrapolo il valore del mese
   var month = $("#mese").val();
+  // Traduco il mese in un oggetto moment.js e mi tiro fuori il primo giorno del mese
   var mom = moment(month, "MMMM");
+  // Con moment.js traduco in data un numero random da 1 a 31
   mom.date(Math.floor(Math.random()*(31-1)+1));
-  
+  // Con moment.js fisso l'anno al 2017
   mom.year(2017);
+  // In una variabile assemblo la mia data nel formato "DD/MM/YYYY"
   var RandomDate = mom.format("DD/MM/YYYY");
-
+  // In una vabile riassumo gli elementi del data
   var outData = {
     salesman: salesman,
     amount: valore,
     date: RandomDate,
   };
-  
   // Chiamata AJAX per aggiungere un elemento
   $.ajax({
     url: "http://157.230.17.132:4009/sales",
