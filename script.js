@@ -5,6 +5,7 @@ function init() {
   // Richiamiamo le funzioni che stmapano i grafici
   printGrafline ()
   printGrafpie ()
+  printGrafbar ()
   // Al click si attiva la funzione per postare nuove info
   $("#submit").click(postNewData);
 }
@@ -34,7 +35,6 @@ function printGrafline () {
     success: function (data) {
       var monthProfit = getProfit (data);
       var getMonths = getMonth ();
-      
       var ctx = document.getElementById('myChartline').getContext('2d');
       var myChart = new Chart(ctx, {
         type: 'line',
@@ -58,18 +58,18 @@ function printGrafline () {
               'rgba(255, 159, 64, 0.2)'
             ],
             borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)',
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)',
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
             ],
             borderWidth: 1
           }]
@@ -216,12 +216,83 @@ function postNewData () {
     success: function () {
       printGrafline ()
       printGrafpie () 
+      printGrafbar ()
     },
     error: function(){
       console.log("C'è stato un errore in upload")
     }
   })
   $("#text-input").val("");
+}
+
+// Funzione che ci ritorna i Quarter
+function getQuarterProfit (data) {
+  // Creo oggetto con i Quarter a cui assegno un valore 0
+  var quarter = {
+    "1" : 0,
+    "2" : 0,
+    "3" : 0,
+    "4" : 0
+  }
+  // Ciclo l'array di oggetti restituito dalla chiamata API
+  for (var i = 0; i < data.length; i++) {
+    // Estrapolo le date di ogni vendita e le trasformo nel formato iso
+    var dati = moment(data[i].date, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    // Attraverso la funzione quarter ottengo il trimestre a cui appartiene una singola data
+    var quad = moment(dati).quarter();
+    // Sommo i profitti contrassegnati dallo stesso quarter
+    quarter[quad] += Number(data[i].amount);
+  }
+  // Attribuisco alle chiavi del mio oggetto il valore che corrisponde al Quarter
+  var quarterProfit = Object.values(quarter);
+  return quarterProfit;
+}
+
+// Funzione che ci permette di costruire il grafico Bar
+function printGrafbar () {
+  $.ajax({
+    url: "http://157.230.17.132:4009/sales",
+    method: "GET",
+    success: function (data) {
+      var quarterProfit = getQuarterProfit (data);
+      var ctx = document.getElementById('myChartbar').getContext('2d');
+      var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+          datasets: [{
+            label: '# Profitto',
+            data: quarterProfit,
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)'
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          }
+        }
+      });
+    },
+    error: function () {
+      alert("C'è stato un errore in download");
+    }
+  })
 }
 
 $(document).ready(init);
